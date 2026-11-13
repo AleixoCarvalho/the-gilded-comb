@@ -464,7 +464,7 @@
       <p>${s.desc}</p>
       <div class="meta"><span class="price">£${s.price}</span><span class="dur">${s.dur} min</span></div>
     </div>`).join("");
-  $("#service").insertAdjacentHTML("beforeend", SERVICES.map(s => `<option value="${s.id}">${s.name} — £${s.price}</option>`).join(""));
+  $("#service").insertAdjacentHTML("beforeend", SERVICES.map(s => `<option value="${s.name}">${s.name} — £${s.price}</option>`).join(""));
 
   // Date limits
   const today = new Date();
@@ -492,7 +492,7 @@
   }
 
   function updateSummary() {
-    const s = SERVICES.find(x => x.id === $("#service").value);
+    const s = SERVICES.find(x => x.name === $("#service").value);
     const t = document.querySelector('input[name="time"]:checked');
     $("#sService").textContent = s ? s.name : "—";
     $("#sBarber").textContent = $("#barber").value;
@@ -526,7 +526,7 @@
     $("#timeField").classList.toggle("invalid", !t); ok = !!t && ok;
     if (!ok) { document.querySelector(".field.invalid")?.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
 
-    const s = SERVICES.find(x => x.id === $("#service").value);
+    const s = SERVICES.find(x => x.name === $("#service").value);
     const booking = {
       ref: "GC-" + Math.random().toString(36).slice(2, 7).toUpperCase(),
       name, email, phone, service: s.name, price: s.price, barber: $("#barber").value,
@@ -541,11 +541,12 @@
     ].map(([k, v]) => `<div><span>${k}</span><b>${escapeHtml(v)}</b></div>`).join("");
     $("#modal").classList.add("show");
 
-    e.target.reset(); renderSlots(); updateSummary(); renderMine();
+    renderMine(); // form is cleared when the confirmation closes, so Skybase can read it first
   });
 
-  $("#closeModal").onclick = () => $("#modal").classList.remove("show");
-  $("#modal").onclick = (e) => { if (e.target.id === "modal") $("#modal").classList.remove("show"); };
+  function closeModal() { $("#modal").classList.remove("show"); $("#bookForm").reset(); renderSlots(); updateSummary(); }
+  $("#closeModal").onclick = closeModal;
+  $("#modal").onclick = (e) => { if (e.target.id === "modal") closeModal(); };
 
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
