@@ -348,7 +348,7 @@
         </div>
       </aside>
 
-      <form data-skybase="appointments" id="bookForm" novalidate>
+      <form id="bookForm" novalidate>
         <div class="steps"><span class="on"></span><span></span><span></span></div>
 
         <div class="grid2">
@@ -533,6 +533,18 @@
       date, time: t.value, notes: $("#notes").value.trim(), created: new Date().toISOString()
     };
     const list = load(); list.push(booking); save(list);
+
+    // Save to the Skybase "appointments" table (before the form is reset)
+    try {
+      if (window.Skybase && Skybase.db) {
+        Skybase.db.table("appointments").add({
+          ref: booking.ref, name, phone, email, service: booking.service, price: booking.price,
+          barber: booking.barber, date, time: booking.time, notes: booking.notes
+        }).catch(err => console.warn("Skybase save failed:", err));
+      } else {
+        console.warn("Skybase not loaded — booking saved on this device only.");
+      }
+    } catch (err) { console.warn("Skybase save failed:", err); }
 
     $("#mMsg").textContent = `Thanks, ${name.split(" ")[0]}! Your chair is reserved.`;
     $("#ticket").innerHTML = [
