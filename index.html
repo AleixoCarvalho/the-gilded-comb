@@ -348,7 +348,7 @@
         </div>
       </aside>
 
-      <form id="bookForm" novalidate>
+      <form data-skybase="appointments" id="bookForm" novalidate>
         <div class="steps"><span class="on"></span><span></span><span></span></div>
 
         <div class="grid2">
@@ -570,5 +570,7 @@
   $("#yr").textContent = new Date().getFullYear();
   renderMine(); updateSummary();
 </script>
+  <!-- Skybase: saves the forms on this site into your database -->
+  <script src="http://127.0.0.1:4000/skybase.js" data-project="sb_kz322unmen" data-key="pk_w9feu2675vxkmhh4sb9c"></script>
 </body>
 </html>
